@@ -69,7 +69,7 @@ public:
     double select(Node* n) override {
         // quit in final state (FIXME: optimize)
         if(n->brd.stones() == 64) {
-            auto score = scorer_(n->brd, n->pl);
+            auto score = scorer_(n->brd, n->pl.opponent());
             n->w += score;
             n->n += 1;
             return score;
@@ -106,6 +106,7 @@ public:
         } else {
             s = 1 - select(bn);
         }
+        assert(0.0 <= s && s <= 1.0);
 
         // backpropagate
         n->w += s;
@@ -116,26 +117,26 @@ public:
     std::unique_ptr<Node> expand(Board brd, Index idx, Player pl) override {
         // initialize
         auto n = std::make_unique<Node>();
-        n->pl = pl.opponent();
         n->brd = std::move(brd);
         n->brd.apply(idx, pl);
+        n->pl = pl.opponent();
         initializer_(n.get());
 
         // rollout
         n->w = rollout(n->brd, n->pl);
-        n->n++;
+        n->n += 1;
         return n;
     }
     double rollout(Board brd, Player pl) override {
-        Player opl = pl;
+        Player cpl = pl.opponent();
         while(true) {
             if(brd.stones() == 64) break;
             auto idx = mover_(brd, pl);
             brd.apply(idx, pl);
             pl = pl.opponent();
         }
-        auto score = scorer_(brd, opl);
-        assert(0 <= score && score <= 1.0);
+        auto score = scorer_(brd, cpl);
+        assert(0.0 <= score && score <= 1.0);
         return score;
     }
 

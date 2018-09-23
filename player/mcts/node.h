@@ -11,7 +11,7 @@ struct Node {
 
     double v;
 
-    double w;
+    double w; // wins for parent
     double n;
 
     std::unique_ptr<Node> ch[64];
