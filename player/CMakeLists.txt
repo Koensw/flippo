@@ -18,6 +18,7 @@ SET(BLACKHOLE_HDRS
 add_definitions(-DDEBUG)
 add_executable(klippo ${BLACKHOLE_SRCS})
 
+# SUBMISSION
 set(LIST_FILE "${CMAKE_BINARY_DIR}/sources.lst")
 
 file(WRITE ${LIST_FILE} "")
@@ -42,4 +43,29 @@ add_custom_target(submission
                   COMMAND g++ -w -pipe -O2 -g --std=c++17 -lm ${SINGLE_FILE} 
                   COMMAND rm a.out
                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# FORMAT
+FIND_PROGRAM(CLANG_FORMAT NAMES "clang-format-6.0" "clang-format-5.0" "clang-format-4.0" "clang-format")
+IF(CLANG_FORMAT)
+    EXEC_PROGRAM(${CLANG_FORMAT} ${CMAKE_CURRENT_SOURCE_DIR} ARGS --version OUTPUT_VARIABLE CLANG_VERSION)
+    STRING(REGEX REPLACE ".*([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" CLANG_MAJOR_VERSION ${CLANG_VERSION})
+
+    IF((${CLANG_MAJOR_VERSION} GREATER "4") OR (${CLANG_MAJOR_VERSION} EQUAL "4"))
+        MESSAGE(STATUS "Found ${CLANG_FORMAT}, adding formatting target")
+        ADD_CUSTOM_TARGET(
+            format
+            COMMAND
+            ${CLANG_FORMAT}
+            -i
+            -style=file
+            ${COMPILE_FILES}
+            COMMENT "Auto formatting of all source files"
+        )
+    ELSE()
+        MESSAGE(STATUS "Could only find version ${CLANG_MAJOR_VERSION} of clang-format, but version >= 4 is required.")
+    ENDIF()
+ELSE()
+    MESSAGE(STATUS "Could NOT find clang-format")
+ENDIF()
+
                     

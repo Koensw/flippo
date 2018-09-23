@@ -4,10 +4,11 @@
 #include <cstdint>
 #include <random>
 
-class Rand{
+class Rand {
 public:
     void seed();
     uint32_t operator()();
+
 private:
     std::mt19937 generator;
 };

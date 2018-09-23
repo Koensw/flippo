@@ -7,11 +7,11 @@ Player Player::players_[3];
 Player::Color Player::me_;
 Player::Color Player::them_;
 
-void Player::init(Color col_me){
+void Player::init(Color col_me) {
     players_[static_cast<int>(Player::WHITE)] = Player(Player::WHITE);
     players_[static_cast<int>(Player::BLACK)] = Player(Player::BLACK);
     players_[static_cast<int>(Player::EMPTY)] = Player(Player::EMPTY);
-    
+
     me_ = col_me;
     them_ = static_cast<Player::Color>(!static_cast<int>(col_me));
 }
@@ -38,14 +38,14 @@ Player Player::opponent() {
 Player::Color Player::color() {
     return this->color_;
 }
-int Player::id(){
+int Player::id() {
     return static_cast<int>(this->color_);
 }
 
-Player Player::getByColor(Player::Color color){
+Player Player::getByColor(Player::Color color) {
     return getById(static_cast<int>(color));
 }
-Player Player::getById(int id){
+Player Player::getById(int id) {
     assert(0 <= id && id <= 2);
     return players_[id];
 }

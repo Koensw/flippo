@@ -6,7 +6,7 @@
 
 Index SimpleStrategy::play() {
     std::vector<Index> mvs = brd_.getMoves(Player::me());
-    
+
     // Choose a move
     std::vector<Index> bmvs;
     int best = INT_MIN;
@@ -18,9 +18,10 @@ Index SimpleStrategy::play() {
             best = cnt;
             bmvs.clear();
         }
-        if(cnt == best) bmvs.push_back(idx);
+        if(cnt == best)
+            bmvs.push_back(idx);
     }
-    
+
     int choice = rng() % bmvs.size();
     return bmvs[choice];
 }
