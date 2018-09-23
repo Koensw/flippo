@@ -6,14 +6,18 @@ set(BLACKHOLE_SRCS
     game/player.cpp
     game/strategy.cpp
     strats/simple.cpp
+    strats/standard_mcts.cpp
     flippo.cpp)
 
 SET(BLACKHOLE_HDRS
     util/rand.h
     game/player.h
     game/board.h
+    mcts/node.h
+    mcts/mcts.hpp
     game/strategy.h
-    strats/simple.h)
+    strats/simple.h
+    strats/standard_mcts.h)
 
 add_definitions(-DDEBUG)
 add_executable(klippo ${BLACKHOLE_SRCS})

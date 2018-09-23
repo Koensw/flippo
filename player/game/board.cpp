@@ -40,8 +40,7 @@ int Board::apply(Index idx, Player pl) {
             r += rc[i];
             c += cc[i];
         }
-        if(lr == idx.r && lc == idx.c)
-            continue;
+        if(lr == idx.r && lc == idx.c) continue;
         r = lr;
         c = lc;
         r -= rc[i];
@@ -57,7 +56,7 @@ int Board::apply(Index idx, Player pl) {
     return cnt;
 }
 
-std::vector<Index> Board::getMoves(Player pl) {
+std::vector<Index> Board::getMoves(Player pl) const {
     // FIXME: optimize
 
     // Find basic moves
@@ -69,15 +68,13 @@ std::vector<Index> Board::getMoves(Player pl) {
                 for(int k = 0; k < 8; ++k) {
                     int nr = i + rc[k];
                     int nc = j + cc[k];
-                    if(nr < 0 || nr >= 8 || nc < 0 || nc >= 8)
-                        continue;
+                    if(nr < 0 || nr >= 8 || nc < 0 || nc >= 8) continue;
                     if(get({nr, nc}).color() != Player::EMPTY) {
                         ok = true;
                         break;
                     }
                 }
-                if(ok)
-                    mvs.push_back({i, j});
+                if(ok) mvs.push_back({i, j});
             }
         }
     }
@@ -86,17 +83,15 @@ std::vector<Index> Board::getMoves(Player pl) {
     std::vector<Index> fmvs;
     for(auto& idx : mvs) {
         Board cp = *this;
-        if(cp.apply(idx, pl))
-            fmvs.push_back(idx);
+        if(cp.apply(idx, pl)) fmvs.push_back(idx);
     }
 
-    if(fmvs.empty())
-        fmvs = mvs;
+    if(fmvs.empty()) fmvs = mvs;
 
     return fmvs;
 }
 
-Player Board::get(Index idx) {
+Player Board::get(Index idx) const {
     if(board_[0] & (1ll << (8 * idx.r + idx.c)))
         return Player::getById(0);
     else if(board_[1] & (1ll << (8 * idx.r + idx.c)))
@@ -104,12 +99,15 @@ Player Board::get(Index idx) {
     else
         return Player::getById(2);
 }
-int Board::count(Player pl) {
+int Board::count(Player pl) const {
     assert(pl.color() != Player::EMPTY);
-    return __builtin_popcount(board_[pl.id()]);
+    return __builtin_popcountll(board_[pl.id()]);
+}
+int Board::stones() const {
+    return count(Player::me()) + count(Player::them());
 }
 
-void Board::print() {
+void Board::print() const {
     for(int i = 0; i < 8; ++i) {
         for(int j = 0; j < 8; ++j) {
             if(board_[Player::WHITE] & (1ll << (i * 8 + j)))
@@ -138,8 +136,7 @@ std::string Board::getString(Index idx) {
 void Board::set(Index idx, Player pl) {
     board_[0] &= ~(1ll << (8 * idx.r + idx.c));
     board_[1] &= ~(1ll << (8 * idx.r + idx.c));
-    if(pl.color() != Player::EMPTY)
-        board_[pl.id()] |= (1ll << (8 * idx.r + idx.c));
+    if(pl.color() != Player::EMPTY) board_[pl.id()] |= (1ll << (8 * idx.r + idx.c));
 }
 void Board::flip(Index idx) {
     board_[0] ^= (1ll << (8 * idx.r + idx.c));

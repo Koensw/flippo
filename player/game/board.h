@@ -10,23 +10,26 @@
 
 class Board {
 public:
-    Board() { board_[0] = board_[1] = 0; }
+    Board() {
+        board_[0] = board_[1] = 0;
+    }
 
     // Initialize board
     void init();
 
     // Board info
-    Player get(Index);
-    int count(Player);
+    Player get(Index) const;
+    int count(Player) const;
+    int stones() const;
 
     // Retrieve moves
-    std::vector<Index> getMoves(Player);
+    std::vector<Index> getMoves(Player) const;
 
     // Apply move
     int apply(Index idx, Player p);
 
     // Print board
-    void print();
+    void print() const;
 
     // Index conversion functions
     static Index getIndex(std::string);

@@ -13,26 +13,35 @@
 #include "util/rand.h"
 
 #include "strats/simple.h"
+#include "strats/standard_mcts.h"
 
 #include <cassert>
 #include <climits>
 #include <memory>
 
 int main(int argc, char** argv) {
-    std::cerr << "R KFT" << std::endl;
+    std::string arg;
+    if(argc == 2) arg = argv[1];
 
     // Initializer global seed
     rng.seed();
 
+    // Select strategy
+    std::unique_ptr<Strategy> strategy;
+    if(arg == "s") {
+        std::cerr << "R KF-SIMPLE" << std::endl;
+        strategy = std::make_unique<SimpleStrategy>();
+    } else {
+        std::cerr << "R KF-MCTS-STANDARD" << std::endl;
+        strategy = std::make_unique<StandardMCTSStrategy>();
+    }
+
     // Initialize player, board and apply initial move
     std::string str;
-    if(argc == 2 && std::string(argv[1]) == "s")
+    if(arg == "t")
         str = "Start";
     else
         std::cin >> str;
-
-    // Select strategy
-    std::unique_ptr<Strategy> strategy = std::make_unique<SimpleStrategy>();
 
     // Start game
     if(str == "Start") {
@@ -42,7 +51,7 @@ int main(int argc, char** argv) {
         strategy->update(Board::getIndex(str));
     }
 
-    while(true) {
+    while(strategy->getBoard().stones() != 64) {
 #ifdef DEBUG
         std::vector<Index> mvs = strategy->getBoard().getMoves(Player::me());
         std::cerr << "MOVES (" << mvs.size() << "):";
@@ -62,8 +71,7 @@ int main(int argc, char** argv) {
 
         // Retrieve opponent move and update board
         std::cin >> str;
-        if(str == "Quit")
-            break;
+        if(str.empty() || str == "Quit") break;
         strategy->update(Board::getIndex(str));
     }
 }

@@ -12,9 +12,9 @@ public:
 
     Board getBoard() const;
 
+protected:
     virtual Index play() = 0;
 
-protected:
     Board brd_;
 };
 

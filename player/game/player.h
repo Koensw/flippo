@@ -6,9 +6,12 @@
 
 class Index {
 public:
-    Index(char rs, char cs) : r(rs), c(cs) {}
-    char r;
-    char c;
+    Index() : r(0), c(0) {
+    }
+    Index(char rs, char cs) : r(rs), c(cs) {
+    }
+    int r;
+    int c;
 };
 
 class Player {
@@ -37,8 +40,10 @@ public:
     static Player getById(int id);
 
 private:
-    Player() {}
-    explicit Player(Color c) : color_(c) {}
+    Player() {
+    }
+    explicit Player(Color c) : color_(c) {
+    }
 
     Color color_;
 
