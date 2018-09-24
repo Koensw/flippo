@@ -10,9 +10,7 @@
 
 class Board {
 public:
-    Board() {
-        board_[0] = board_[1] = 0;
-    }
+    Board() { board_[0] = board_[1] = 0; }
 
     // Initialize board
     void init();

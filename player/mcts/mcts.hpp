@@ -29,6 +29,7 @@ public:
         root_ = std::make_unique<Node>();
         root_->pl = pl;
         root_->brd = brd;
+        root_->mvs = root_->brd.getMoves(root_->pl);
     }
 
     Index simulate(unsigned int n) override {
@@ -63,13 +64,20 @@ public:
             root_ = std::make_unique<Node>();
             root_->pl = pl.opponent();
             root_->brd = brd;
+            root_->mvs = root_->brd.getMoves(root_->pl);
         }
     }
 
     double select(Node* n) override {
         // quit in final state (FIXME: optimize)
         if(n->brd.stones() == 64) {
-            auto score = scorer_(n->brd, n->pl.opponent());
+            double score = 0.0;
+            if(!n->f) {
+                score = n->s = scorer_(n->brd, n->pl.opponent());
+                n->f = true;
+            } else {
+                score = n->s;
+            }
             n->w += score;
             n->n += 1;
             return score;
@@ -79,7 +87,7 @@ public:
         Node* bn = nullptr;
         Index bnidx;
         double best = std::numeric_limits<double>::lowest();
-        for(auto& idx : n->brd.getMoves(n->pl)) {
+        for(auto& idx : n->mvs) {
             int i = idx.r * 8 + idx.c;
             double score = 0;
             if(n->ch[i] == nullptr) {
@@ -120,6 +128,7 @@ public:
         n->brd = std::move(brd);
         n->brd.apply(idx, pl);
         n->pl = pl.opponent();
+        n->mvs = n->brd.getMoves(n->pl);
         initializer_(n.get());
 
         // rollout

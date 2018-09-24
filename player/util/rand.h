@@ -6,6 +6,8 @@
 
 class Rand {
 public:
+    Rand();
+
     void seed();
     uint32_t operator()();
 

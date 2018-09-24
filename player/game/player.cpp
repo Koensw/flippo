@@ -16,10 +16,10 @@ void Player::init(Color col_me) {
     them_ = static_cast<Player::Color>(!static_cast<int>(col_me));
 }
 
-Player& Player::me() {
+Player Player::me() {
     return players_[static_cast<int>(Player::me_)];
 }
-Player& Player::them() {
+Player Player::them() {
     return players_[static_cast<int>(Player::them_)];
 }
 

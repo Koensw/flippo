@@ -4,7 +4,7 @@
 #include <memory>
 
 struct Node {
-    Node() : v(0), w(0), n(0), pl(Player::me()) {
+    Node() : v(0), w(0), n(0), f(false), s(0), pl(Player::me()) {
         for(int i = 0; i < 64; ++i)
             ch[i] = 0;
     }
@@ -14,8 +14,13 @@ struct Node {
     double w; // wins for parent
     double n;
 
+    bool f;
+    double s; // final score
+    
+    std::vector<Index> mvs;
     std::unique_ptr<Node> ch[64];
-
+    //std::vector<std::unique_ptr<Node>> ch;
+    
     Player pl;
     Board brd;
 };

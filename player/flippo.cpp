@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     if(argc == 2) arg = argv[1];
 
     // Initializer global seed
-    rng.seed();
+    // rng.seed();
 
     // Select strategy
     std::unique_ptr<Strategy> strategy;
@@ -74,4 +74,6 @@ int main(int argc, char** argv) {
         if(str.empty() || str == "Quit") break;
         strategy->update(Board::getIndex(str));
     }
+
+    std::cerr << "TIME: " << strategy->getElapsed() << std::endl;
 }

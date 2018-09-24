@@ -6,10 +6,8 @@
 
 class Index {
 public:
-    Index() : r(0), c(0) {
-    }
-    Index(char rs, char cs) : r(rs), c(cs) {
-    }
+    Index() : r(0), c(0) {}
+    Index(char rs, char cs) : r(rs), c(cs) {}
     int r;
     int c;
 };
@@ -25,9 +23,8 @@ public:
     };
 
     static void init(Color me);
-    // FIXME: check reference vs value
-    static Player& me();
-    static Player& them();
+    static Player me();
+    static Player them();
     bool isMe();
     bool isThem();
 
@@ -40,10 +37,8 @@ public:
     static Player getById(int id);
 
 private:
-    Player() {
-    }
-    explicit Player(Color c) : color_(c) {
-    }
+    Player() {}
+    explicit Player(Color c) : color_(c) {}
 
     Color color_;
 
