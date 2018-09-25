@@ -14,7 +14,3 @@ void Rand::seed() {
     generator.seed(time.time_since_epoch().count());
     return;
 }
-
-uint32_t Rand::operator()() {
-    return generator();
-}

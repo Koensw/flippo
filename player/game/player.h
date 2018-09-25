@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <cassert>
 
 class Index {
 public:
@@ -11,6 +12,10 @@ public:
     int r;
     int c;
 };
+
+inline bool operator==(Index i1, Index i2) {
+    return i1.r == i2.r && i1.c == i2.c;
+}
 
 class Player {
     friend bool operator==(Player p1, Player p2);
@@ -23,18 +28,40 @@ public:
     };
 
     static void init(Color me);
-    static Player me();
-    static Player them();
-    bool isMe();
-    bool isThem();
+    
+    static inline Player me() {
+        return players_[static_cast<int>(Player::me_)];
+    }
+    static inline Player them() {
+        return players_[static_cast<int>(Player::them_)];
+    }
 
-    Player opponent();
+    inline bool isMe() {
+        return color_ == me().color_;
+    }
+    inline bool isThem() {
+        return color_ == them().color_;
+    }
 
-    Color color();
-    int id();
+    inline Player opponent() {
+        assert(color() != Player::EMPTY);
+        return Player::getById(!id());
+    }
 
-    static Player getByColor(Color color);
-    static Player getById(int id);
+    inline Color color() {
+        return this->color_;
+    }
+    inline int id() {
+        return static_cast<int>(this->color_);
+    }
+
+    static inline Player getByColor(Player::Color color) {
+        return getById(static_cast<int>(color));
+    }
+    static inline Player getById(int id) {
+        assert(0 <= id && id <= 2);
+        return players_[id];
+    }
 
 private:
     Player() {}
@@ -48,6 +75,9 @@ private:
     static Color them_;
 };
 
-bool operator==(Player p1, Player p2);
+inline bool operator==(Player p1, Player p2) {
+    return p1.color_ == p2.color_;
+}
+
 
 #endif

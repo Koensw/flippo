@@ -6,6 +6,9 @@
 #include <string>
 #include <unistd.h>
 
+#include "../util/rand.h"
+#include "../util/bit.h"
+
 int rc[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
 int cc[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
 
@@ -57,38 +60,36 @@ int Board::apply(Index idx, Player pl) {
 }
 
 std::vector<Index> Board::getMoves(Player pl) const {
-    // FIXME: optimize
-
-    // Find basic moves
+    // Find moves
+    uint64_t opt = get_move_options(board_[0] | board_[1]);
+    
+    // Prune non flipping moves (if exists)
     std::vector<Index> mvs;
-    for(int i = 0; i < 8; ++i) {
-        for(int j = 0; j < 8; ++j) {
-            if(get({i, j}).color() == Player::EMPTY) {
-                bool ok = false;
-                for(int k = 0; k < 8; ++k) {
-                    int nr = i + rc[k];
-                    int nc = j + cc[k];
-                    if(nr < 0 || nr >= 8 || nc < 0 || nc >= 8) continue;
-                    if(get({nr, nc}).color() != Player::EMPTY) {
-                        ok = true;
-                        break;
-                    }
-                }
-                if(ok) mvs.push_back({i, j});
-            }
+    bool flip_moves = false;
+    while(opt) {
+        unsigned int i = __builtin_ctzll(opt);
+        opt ^= (1ull << i);
+        Index idx = {i/8, i%8};
+        
+        Board cp = *this;
+        if(cp.apply(idx, pl)) {
+            if(!flip_moves) mvs.clear();
+            flip_moves = true;
+            mvs.push_back(idx);
+        } else if(!flip_moves) {
+            mvs.push_back(idx);
         }
     }
+    return mvs;
+}
 
-    // Build subset of moves that flip at least one stone
-    std::vector<Index> fmvs;
-    for(auto& idx : mvs) {
-        Board cp = *this;
-        if(cp.apply(idx, pl)) fmvs.push_back(idx);
-    }
-
-    if(fmvs.empty()) fmvs = mvs;
-
-    return fmvs;
+// NOTE: does not take invalid non-flipping moves into account
+Index Board::getRandomBaseMove() const {
+    uint64_t opt = get_move_options(board_[0] | board_[1]);
+    
+    auto idx = (rng() % __builtin_popcountll(opt));
+    int bp = select_bit(opt, idx);
+    return {bp/8, bp%8};
 }
 
 Player Board::get(Index idx) const {
@@ -99,21 +100,33 @@ Player Board::get(Index idx) const {
     else
         return Player::getById(2);
 }
-int Board::count(Player pl) const {
-    assert(pl.color() != Player::EMPTY);
-    return __builtin_popcountll(board_[pl.id()]);
-}
-int Board::stones() const {
-    return count(Player::me()) + count(Player::them());
-}
 
 void Board::print() const {
+    std::cerr << " ";
+    for(int i = 0; i < 8; ++i) std::cerr << i+1;
+    std::cerr << std::endl;
     for(int i = 0; i < 8; ++i) {
+        std::cerr << static_cast<char>('A' + i);
         for(int j = 0; j < 8; ++j) {
             if(board_[Player::WHITE] & (1ll << (i * 8 + j)))
                 std::cerr << "W";
             else if(board_[Player::BLACK] & (1ll << (i * 8 + j)))
                 std::cerr << "B";
+            else
+                std::cerr << ".";
+        }
+        std::cerr << std::endl;
+    }
+}
+void Board::print(uint64_t brd) {
+    std::cerr << " ";
+    for(int i = 0; i < 8; ++i) std::cerr << i+1;
+    std::cerr << std::endl;
+    for(int i = 0; i < 8; ++i) {
+        std::cerr << static_cast<char>('A' + i);
+        for(int j = 0; j < 8; ++j) {
+            if(brd & (1ll << (i * 8 + j)))
+                std::cerr << "#";
             else
                 std::cerr << ".";
         }

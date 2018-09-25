@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     if(argc == 2) arg = argv[1];
 
     // Initializer global seed
-    // rng.seed();
+    rng.seed();
 
     // Select strategy
     std::unique_ptr<Strategy> strategy;

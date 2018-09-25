@@ -10,6 +10,7 @@ set(BLACKHOLE_SRCS
     flippo.cpp)
 
 SET(BLACKHOLE_HDRS
+    util/bit.h
     util/rand.h
     game/player.h
     game/board.h

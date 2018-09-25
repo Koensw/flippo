@@ -9,8 +9,10 @@ public:
     Rand();
 
     void seed();
-    uint32_t operator()();
 
+    inline uint32_t operator()() {
+        return generator();
+    }
 private:
     std::mt19937 generator;
 };

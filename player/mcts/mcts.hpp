@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <iostream>
 #include <limits>
 
@@ -30,6 +31,7 @@ public:
         root_->pl = pl;
         root_->brd = brd;
         root_->mvs = root_->brd.getMoves(root_->pl);
+        root_->ch.resize(root_->mvs.size());
     }
 
     Index simulate(unsigned int n) override {
@@ -41,12 +43,12 @@ public:
         // find best
         int best = -1;
         Index bidx;
-        for(int i = 0; i < 64; ++i) {
+        for(size_t i = 0; i < root_->mvs.size(); ++i) {
             if(root_->ch[i] == nullptr) continue;
 
             if(root_->ch[i]->n > best) {
                 best = root_->ch[i]->n;
-                bidx = {i / 8, i % 8};
+                bidx = root_->mvs[i];
             }
         }
 
@@ -54,9 +56,9 @@ public:
         return bidx;
     }
     void update(Index idx) override {
-        // assert(root_->ch[idx.r * 8 + idx.c] != 0);
-        if(root_->ch[idx.r * 8 + idx.c] != 0) {
-            root_ = std::move(root_->ch[idx.r * 8 + idx.c]);
+        auto iter = std::find(root_->mvs.begin(), root_->mvs.end(), idx);
+        if(iter != root_->mvs.end() && root_->ch[iter - root_->mvs.begin()] != nullptr) {
+            root_ = std::move(root_->ch[iter - root_->mvs.begin()]);
         } else {
             Player pl = root_->pl;
             Board brd = root_->brd;
@@ -65,19 +67,19 @@ public:
             root_->pl = pl.opponent();
             root_->brd = brd;
             root_->mvs = root_->brd.getMoves(root_->pl);
+            root_->ch.resize(root_->mvs.size());
         }
     }
 
     double select(Node* n) override {
-        // quit in final state (FIXME: optimize)
+        assert(n->ch.size() == n->mvs.size());
+        // quit in final state
         if(n->brd.stones() == 64) {
-            double score = 0.0;
+            double score = n->s;
             if(!n->f) {
                 score = n->s = scorer_(n->brd, n->pl.opponent());
                 n->f = true;
-            } else {
-                score = n->s;
-            }
+            } 
             n->w += score;
             n->n += 1;
             return score;
@@ -85,32 +87,26 @@ public:
 
         // choose
         Node* bn = nullptr;
-        Index bnidx;
+        Index bnidx; int bni = 0;
         double best = std::numeric_limits<double>::lowest();
-        for(auto& idx : n->mvs) {
-            int i = idx.r * 8 + idx.c;
+        for(size_t i=0; i<n->mvs.size(); ++i) {
             double score = 0;
-            if(n->ch[i] == nullptr) {
-                score = std::numeric_limits<double>::max();
-            } else {
-                score = selector_(n, n->ch[i].get());
-            }
+            score = selector_(n, n->ch[i].get());
 
             if(score > best) {
                 best = score;
                 bn = n->ch[i].get();
-                bnidx = idx;
+                bni = i;
+                bnidx = n->mvs[i];
             }
         }
-
-        // std::cerr << bn << " " << bnidx.r << " " << bnidx.c << std::endl;
 
         // recurse
         double s = 0;
         if(bn == nullptr) {
             auto r = expand(n->brd, bnidx, n->pl);
             s = 1 - r->w;
-            n->ch[bnidx.r * 8 + bnidx.c] = std::move(r);
+            n->ch[bni] = std::move(r);
         } else {
             s = 1 - select(bn);
         }
@@ -129,6 +125,7 @@ public:
         n->brd.apply(idx, pl);
         n->pl = pl.opponent();
         n->mvs = n->brd.getMoves(n->pl);
+        n->ch.resize(n->mvs.size());
         initializer_(n.get());
 
         // rollout
@@ -151,7 +148,7 @@ public:
 
     void print(unsigned int n) {
         std::vector<std::pair<int, int>> nds;
-        for(int i = 0; i < 64; ++i) {
+        for(size_t i = 0; i < root_->ch.size(); ++i) {
             if(root_->ch[i] == nullptr) continue;
             nds.push_back({root_->ch[i]->n, i});
         }
@@ -161,7 +158,7 @@ public:
         for(unsigned int i = 0; i < std::min(n, static_cast<unsigned int>(nds.size())); ++i) {
             int j = nds[i].second;
             auto& n = root_->ch[j];
-            std::cerr << Board::getString({j / 8, j % 8}) << ": " << n->n << " (" << n->w / n->n << ")" << std::endl;
+            std::cerr << Board::getString(root_->mvs[j]) << ": " << n->n << " (" << n->w / n->n << ")" << std::endl;
         }
     }
 
