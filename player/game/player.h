@@ -1,9 +1,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <cassert>
 #include <cstdint>
 #include <vector>
-#include <cassert>
 
 class Index {
 public:
@@ -28,36 +28,22 @@ public:
     };
 
     static void init(Color me);
-    
-    static inline Player me() {
-        return players_[static_cast<int>(Player::me_)];
-    }
-    static inline Player them() {
-        return players_[static_cast<int>(Player::them_)];
-    }
 
-    inline bool isMe() {
-        return color_ == me().color_;
-    }
-    inline bool isThem() {
-        return color_ == them().color_;
-    }
+    static inline Player me() { return players_[static_cast<int>(Player::me_)]; }
+    static inline Player them() { return players_[static_cast<int>(Player::them_)]; }
+
+    inline bool isMe() { return color_ == me().color_; }
+    inline bool isThem() { return color_ == them().color_; }
 
     inline Player opponent() {
         assert(color() != Player::EMPTY);
         return Player::getById(!id());
     }
 
-    inline Color color() {
-        return this->color_;
-    }
-    inline int id() {
-        return static_cast<int>(this->color_);
-    }
+    inline Color color() { return this->color_; }
+    inline int id() { return static_cast<int>(this->color_); }
 
-    static inline Player getByColor(Player::Color color) {
-        return getById(static_cast<int>(color));
-    }
+    static inline Player getByColor(Player::Color color) { return getById(static_cast<int>(color)); }
     static inline Player getById(int id) {
         assert(0 <= id && id <= 2);
         return players_[id];
@@ -78,6 +64,5 @@ private:
 inline bool operator==(Player p1, Player p2) {
     return p1.color_ == p2.color_;
 }
-
 
 #endif

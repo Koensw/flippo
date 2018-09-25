@@ -10,9 +10,8 @@ public:
 
     void seed();
 
-    inline uint32_t operator()() {
-        return generator();
-    }
+    inline uint32_t operator()() { return generator(); }
+
 private:
     std::mt19937 generator;
 };

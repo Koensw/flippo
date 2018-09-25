@@ -13,11 +13,11 @@ struct Node {
 
     bool f;
     double s; // final score
-    
+
     std::vector<Index> mvs;
-    //std::unique_ptr<Node> ch[64];
+    // std::unique_ptr<Node> ch[64];
     std::vector<std::unique_ptr<Node>> ch;
-    
+
     Player pl;
     Board brd;
 };

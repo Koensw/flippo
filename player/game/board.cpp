@@ -6,8 +6,8 @@
 #include <string>
 #include <unistd.h>
 
-#include "../util/rand.h"
 #include "../util/bit.h"
+#include "../util/rand.h"
 
 int rc[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
 int cc[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
@@ -62,15 +62,15 @@ int Board::apply(Index idx, Player pl) {
 std::vector<Index> Board::getMoves(Player pl) const {
     // Find moves
     uint64_t opt = get_move_options(board_[0] | board_[1]);
-    
+
     // Prune non flipping moves (if exists)
     std::vector<Index> mvs;
     bool flip_moves = false;
     while(opt) {
         unsigned int i = __builtin_ctzll(opt);
         opt ^= (1ull << i);
-        Index idx = {i/8, i%8};
-        
+        Index idx = {i / 8, i % 8};
+
         Board cp = *this;
         if(cp.apply(idx, pl)) {
             if(!flip_moves) mvs.clear();
@@ -86,10 +86,10 @@ std::vector<Index> Board::getMoves(Player pl) const {
 // NOTE: does not take invalid non-flipping moves into account
 Index Board::getRandomBaseMove() const {
     uint64_t opt = get_move_options(board_[0] | board_[1]);
-    
+
     auto idx = (rng() % __builtin_popcountll(opt));
     int bp = select_bit(opt, idx);
-    return {bp/8, bp%8};
+    return {bp / 8, bp % 8};
 }
 
 Player Board::get(Index idx) const {
@@ -103,7 +103,8 @@ Player Board::get(Index idx) const {
 
 void Board::print() const {
     std::cerr << " ";
-    for(int i = 0; i < 8; ++i) std::cerr << i+1;
+    for(int i = 0; i < 8; ++i)
+        std::cerr << i + 1;
     std::cerr << std::endl;
     for(int i = 0; i < 8; ++i) {
         std::cerr << static_cast<char>('A' + i);
@@ -120,7 +121,8 @@ void Board::print() const {
 }
 void Board::print(uint64_t brd) {
     std::cerr << " ";
-    for(int i = 0; i < 8; ++i) std::cerr << i+1;
+    for(int i = 0; i < 8; ++i)
+        std::cerr << i + 1;
     std::cerr << std::endl;
     for(int i = 0; i < 8; ++i) {
         std::cerr << static_cast<char>('A' + i);

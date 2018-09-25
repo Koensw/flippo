@@ -17,14 +17,12 @@ public:
 
     // Board info
     Player get(Index) const;
-    
+
     inline int count(Player pl) const {
         assert(pl.color() != Player::EMPTY);
         return __builtin_popcountll(board_[pl.id()]);
     }
-    inline int stones() const {
-        return count(Player::me()) + count(Player::them());
-    }
+    inline int stones() const { return count(Player::me()) + count(Player::them()); }
 
     // Retrieve moves
     std::vector<Index> getMoves(Player) const;
@@ -45,12 +43,11 @@ private:
     // Update board
     void set(Index, Player p);
     void flip(Index);
-    
+
     // Find move options
     inline constexpr uint64_t get_move_options(uint64_t brd) const {
-        uint64_t edge = ((brd & 18374403900871474942ull) >> 1) |
-                        ((brd & 9187201950435737471ull) << 1) |
-                        (brd << 8) | (brd >> 8);
+        uint64_t edge =
+            ((brd & 18374403900871474942ull) >> 1) | ((brd & 9187201950435737471ull) << 1) | (brd << 8) | (brd >> 8);
         return edge & (~brd);
     }
 

@@ -79,7 +79,7 @@ public:
             if(!n->f) {
                 score = n->s = scorer_(n->brd, n->pl.opponent());
                 n->f = true;
-            } 
+            }
             n->w += score;
             n->n += 1;
             return score;
@@ -87,9 +87,10 @@ public:
 
         // choose
         Node* bn = nullptr;
-        Index bnidx; int bni = 0;
+        Index bnidx;
+        int bni = 0;
         double best = std::numeric_limits<double>::lowest();
-        for(size_t i=0; i<n->mvs.size(); ++i) {
+        for(size_t i = 0; i < n->mvs.size(); ++i) {
             double score = 0;
             score = selector_(n, n->ch[i].get());
 

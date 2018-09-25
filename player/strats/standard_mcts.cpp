@@ -11,19 +11,17 @@ void StandardMCTSStrategy::start(Player::Color c) {
 
     auto selector = [](Node* p, Node* c) {
         double scr = 0.0;
-        if(c == nullptr) 
+        if(c == nullptr)
             scr = 1.4 * std::sqrt(std::log(p->n));
         else
             scr = c->w / c->n + 1.4 * std::sqrt(std::log(p->n) / c->n);
-        
+
         scr += 1e-9 * (rng() % 1000);
         return scr;
     };
-    auto initializer = [](Node* n) { 
-        n->v = 0; 
-    };
+    auto initializer = [](Node* n) { n->v = 0; };
     auto mover = [](const Board& brd, Player pl) {
-        (void) pl;
+        (void)pl;
         auto mv = brd.getRandomBaseMove();
         return mv;
         /*auto mvs = brd.getMoves(pl);
