@@ -12,6 +12,7 @@ class StandardMCTSStrategy : public Strategy {
 
 private:
     Index play() override;
+    int simulations_;
 
     std::unique_ptr<MCTSBase> mcts_;
 };

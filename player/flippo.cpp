@@ -61,8 +61,11 @@ int main(int argc, char** argv) {
         std::string str;
         if(arg == "t")
             str = "Start";
-        else
+        else {
+            strategy->pause();
             std::cin >> str;
+            strategy->resume();
+        }
 
         // Start game
         if(str == "Start") {
@@ -93,7 +96,9 @@ int main(int argc, char** argv) {
 
         // Retrieve opponent move and update board
         std::string str;
+        strategy->pause();
         std::cin >> str;
+        strategy->resume();
         if(str.empty() || str == "Quit") break;
         strategy->update(Board::getIndex(str));
     }
