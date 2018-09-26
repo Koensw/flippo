@@ -12,7 +12,7 @@ void StandardMCTSStrategy::start(Player::Color c) {
     auto selector = [](Node* p, Node* c) {
         double scr = 0.0;
         if(c == nullptr)
-            scr = 1.4 * std::sqrt(std::log(p->n));
+            scr = std::numeric_limits<double>::max()/2.0;
         else
             scr = c->w / c->n + 1.4 * std::sqrt(std::log(p->n) / c->n);
 

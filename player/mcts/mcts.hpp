@@ -89,6 +89,7 @@ public:
         Node* bn = nullptr;
         Index bnidx;
         int bni = 0;
+        // FIXME: optimize (remember best)
         double best = std::numeric_limits<double>::lowest();
         for(size_t i = 0; i < n->mvs.size(); ++i) {
             double score = 0;

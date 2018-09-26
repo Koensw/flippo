@@ -4,15 +4,17 @@ void Strategy::start(Player::Color c) {
     start_ = std::chrono::high_resolution_clock::now();
     Player::init(c);
     brd_.init();
+    pl_ = Player::getByColor(Player::WHITE);
 }
 
 void Strategy::update(Index idx) {
-    brd_.apply(idx, Player::them());
+    brd_.apply(idx, pl_);
+    pl_ = pl_.opponent();
 }
 
 Index Strategy::step() {
     Index idx = play();
-    brd_.apply(idx, Player::me());
+    Strategy::update(idx);
     return idx;
 }
 

@@ -21,6 +21,8 @@ class Player {
     friend bool operator==(Player p1, Player p2);
 
 public:
+    Player(): color_(EMPTY) {}
+    
     enum Color {
         WHITE = 0,
         BLACK = 1,
@@ -50,7 +52,6 @@ public:
     }
 
 private:
-    Player() {}
     explicit Player(Color c) : color_(c) {}
 
     Color color_;

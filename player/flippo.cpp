@@ -18,10 +18,11 @@
 #include <cassert>
 #include <climits>
 #include <memory>
+#include <fstream>
 
 int main(int argc, char** argv) {
     std::string arg;
-    if(argc == 2) arg = argv[1];
+    if(argc >= 2) arg = argv[1];
 
     // Initializer global seed
     rng.seed();
@@ -36,19 +37,40 @@ int main(int argc, char** argv) {
         strategy = std::make_unique<StandardMCTSStrategy>();
     }
 
-    // Initialize player, board and apply initial move
-    std::string str;
-    if(arg == "t")
-        str = "Start";
-    else
-        std::cin >> str;
+    // Check if game has to be preloaded
+    if(arg == "r") {
+        // Preload game playing as the one to move afterwards
+        assert(argc == 4);
+        int mv = std::stoi(argv[3]);
+        if((mv % 2) == 0) strategy->start(Player::WHITE);
+        else strategy->start(Player::BLACK);
+        
+        std::fstream file(argv[2]);
+        assert(file);
+        std::string str;
+        int cnt = 0;
+        while(file >> str && cnt < mv) {
+            if(str.size() != 2 || !('A' <= str[0] && str[0] <= 'H' && '0' <= str[1] && str[1] <= '8')) continue;
+            strategy->update(Board::getIndex(str));
+            ++cnt;
+        }
+        std::cerr << "PRELOADED:" << std::endl;
+        strategy->getBoard().print();
+    } else {    
+        // Initialize player, board and apply initial move
+        std::string str;
+        if(arg == "t")
+            str = "Start";
+        else
+            std::cin >> str;
 
-    // Start game
-    if(str == "Start") {
-        strategy->start(Player::WHITE);
-    } else {
-        strategy->start(Player::BLACK);
-        strategy->update(Board::getIndex(str));
+        // Start game
+        if(str == "Start") {
+            strategy->start(Player::WHITE);
+        } else {
+            strategy->start(Player::BLACK);
+            strategy->update(Board::getIndex(str));
+        }
     }
 
     while(strategy->getBoard().stones() != 64) {
@@ -70,6 +92,7 @@ int main(int argc, char** argv) {
 #endif
 
         // Retrieve opponent move and update board
+        std::string str;
         std::cin >> str;
         if(str.empty() || str == "Quit") break;
         strategy->update(Board::getIndex(str));

@@ -20,6 +20,7 @@ protected:
     virtual Index play() = 0;
 
     Board brd_;
+    Player pl_;
     std::chrono::high_resolution_clock::time_point start_;
 };
 
