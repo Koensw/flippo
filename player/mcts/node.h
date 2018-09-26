@@ -4,7 +4,7 @@
 #include <memory>
 
 struct Node {
-    Node() : v(0), w(0), n(1), f(false), s(0), pl(Player::me()) {}
+    Node() : v(0), w(0), n(0), f(false), s(0), pl(Player::me()) {}
 
     double v;
 

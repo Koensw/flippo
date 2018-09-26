@@ -132,7 +132,7 @@ public:
 
         // rollout
         n->w = rollout(n->brd, n->pl);
-        n->n += 1;
+        n->n = 1;
         return n;
     }
     double rollout(Board brd, Player pl) override {
