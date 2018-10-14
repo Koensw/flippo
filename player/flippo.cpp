@@ -17,8 +17,8 @@
 
 #include <cassert>
 #include <climits>
-#include <memory>
 #include <fstream>
+#include <memory>
 
 int main(int argc, char** argv) {
     std::string arg;
@@ -42,9 +42,11 @@ int main(int argc, char** argv) {
         // Preload game playing as the one to move afterwards
         assert(argc == 4);
         int mv = std::stoi(argv[3]);
-        if((mv % 2) == 0) strategy->start(Player::WHITE);
-        else strategy->start(Player::BLACK);
-        
+        if((mv % 2) == 0)
+            strategy->start(Player::WHITE);
+        else
+            strategy->start(Player::BLACK);
+
         std::fstream file(argv[2]);
         assert(file);
         std::string str;
@@ -56,7 +58,7 @@ int main(int argc, char** argv) {
         }
         std::cerr << "PRELOADED:" << std::endl;
         strategy->getBoard().print();
-    } else {    
+    } else {
         // Initialize player, board and apply initial move
         std::string str;
         if(arg == "t")

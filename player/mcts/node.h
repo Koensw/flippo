@@ -3,6 +3,9 @@
 
 #include <memory>
 
+#include "../game/board.h"
+#include "../game/player.h"
+
 struct Node {
     Node() : v(0), w(0), n(0), f(false), s(0), pl(Player::me()) {}
 

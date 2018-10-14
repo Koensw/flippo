@@ -67,7 +67,7 @@ std::vector<Index> Board::getMoves(Player pl) const {
     std::vector<Index> mvs;
     bool flip_moves = false;
     while(opt) {
-        unsigned int i = __builtin_ctzll(opt);
+        int i = __builtin_ctzll(opt);
         opt ^= (1ull << i);
         Index idx = {i / 8, i % 8};
 

@@ -8,7 +8,7 @@
 class Index {
 public:
     Index() : r(0), c(0) {}
-    Index(char rs, char cs) : r(rs), c(cs) {}
+    Index(int rs, int cs) : r(rs), c(cs) {}
     int r;
     int c;
 };
@@ -21,8 +21,8 @@ class Player {
     friend bool operator==(Player p1, Player p2);
 
 public:
-    Player(): color_(EMPTY) {}
-    
+    Player() : color_(EMPTY) {}
+
     enum Color {
         WHITE = 0,
         BLACK = 1,

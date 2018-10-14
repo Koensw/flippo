@@ -9,7 +9,7 @@
 class Strategy {
 public:
     Strategy();
-    
+
     virtual void start(Player::Color c);
     virtual void update(Index idx);
     virtual Index step();
@@ -25,7 +25,7 @@ protected:
 
     Board brd_;
     Player pl_;
-    
+
     bool pause_;
     std::chrono::high_resolution_clock::time_point pause_start_;
     std::chrono::high_resolution_clock::time_point start_;

@@ -15,7 +15,7 @@ add_custom_target(run
                  COMMAND ./competition.sh ${PLAYERS}
                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/
                  DEPENDS klippo)
-                 
+
 add_custom_target(check
                  COMMAND cp "$<TARGET_FILE:klippo>" ${CMAKE_SOURCE_DIR}/bin/
                  COMMAND ./caiaio

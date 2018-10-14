@@ -46,8 +46,7 @@ private:
 
     // Find move options
     inline constexpr uint64_t get_move_options(uint64_t brd) const {
-        uint64_t edge =
-            ((brd & 18374403900871474942ull) >> 1) | ((brd & 9187201950435737471ull) << 1);
+        uint64_t edge = ((brd & 18374403900871474942ull) >> 1) | ((brd & 9187201950435737471ull) << 1);
         edge |= ((brd & 18374403900871474942ull) >> 9) | (brd >> 8) | ((brd & 9187201950435737471ull) >> 7);
         edge |= ((brd & 18374403900871474942ull) << 7) | (brd << 8) | ((brd & 9187201950435737471ull) << 9);
         return edge & (~brd);

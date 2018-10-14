@@ -17,7 +17,7 @@ void StandardMCTSStrategy::start(Player::Color c) {
     auto selector = [](Node* p, Node* c) {
         double scr = 0.0;
         if(c == nullptr)
-            scr = std::numeric_limits<double>::max()/2.0;
+            scr = std::numeric_limits<double>::max() / 2.0;
         else
             scr = c->w / c->n + 1.4 * std::sqrt(std::log(p->n) / c->n);
 
@@ -36,7 +36,7 @@ void StandardMCTSStrategy::start(Player::Color c) {
         auto scr = (brd.count(pl) - 2.0) / 60.0;
         return scr;
     };
-    
+
     simulations_ = INIT_SIMULATIONS; // default number of simulation to start with (update dynamically)
 
     mcts_ = std::unique_ptr<MCTSBase>(
@@ -53,13 +53,13 @@ Index StandardMCTSStrategy::play() {
     auto start = getElapsed();
     auto idx = mcts_->simulate(simulations_);
     auto end = getElapsed();
-    
+
     // calculate new number of simulations
     auto second_per_sim = (end - start) / simulations_;
     //(64 - brd_.stones()) * new_sims * sim_per_second = PLAY_TIME;
-    simulations_ = (PLAY_TIME - getElapsed()) / (((64 - brd_.stones() - 1)/2.0 + 1e-9) * second_per_sim);
+    simulations_ = (PLAY_TIME - getElapsed()) / (((64 - brd_.stones() - 1) / 2.0 + 1e-9) * second_per_sim);
     simulations_ = std::min(std::max(MIN_SIMULATIONS, simulations_), MAX_SIMULATIONS);
-    
+
     // print debugging
     std::cerr << "NEXT: " << simulations_ << std::endl;
     std::cerr << "SCORES: " << std::endl;

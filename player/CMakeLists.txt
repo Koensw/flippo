@@ -73,4 +73,3 @@ ELSE()
     MESSAGE(STATUS "Could NOT find clang-format")
 ENDIF()
 
-                    
