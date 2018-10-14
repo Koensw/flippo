@@ -1,7 +1,7 @@
 /*
- * AI Player Blackhole Codecup
+ * AI Player Flippo Codecup
  *
- * (c) Koen Wolters 2016
+ * (c) Koen Wolters 2018
  */
 
 #include <algorithm>
@@ -10,6 +10,7 @@
 #include "game/board.h"
 #include "game/player.h"
 #include "game/strategy.h"
+#include "util/debug.h"
 #include "util/rand.h"
 
 #include "strats/simple.h"
@@ -19,6 +20,8 @@
 #include <climits>
 #include <fstream>
 #include <memory>
+
+bool debug = false;
 
 int main(int argc, char** argv) {
     std::string arg;
@@ -56,8 +59,13 @@ int main(int argc, char** argv) {
             strategy->update(Board::getIndex(str));
             ++cnt;
         }
-        std::cerr << "PRELOADED:" << std::endl;
+        std::cerr << "PRELOADED BOARD:" << std::endl;
         strategy->getBoard().print();
+        std::cerr << "CONTINUING..." << std::endl;
+        debug = true;
+        // strategy->getBoard().apply(Board::getIndex("B5"), Player::me());
+        strategy->getBoard().getMoves(Player::me());
+        std::exit(1);
     } else {
         // Initialize player, board and apply initial move
         std::string str;

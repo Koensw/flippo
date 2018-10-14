@@ -25,6 +25,7 @@ public:
     inline int stones() const { return count(Player::me()) + count(Player::them()); }
 
     // Retrieve moves
+    uint64_t getBitMoves(Player) const;
     std::vector<Index> getMoves(Player) const;
     Index getRandomBaseMove() const;
 
@@ -43,14 +44,6 @@ private:
     // Update board
     void set(Index, Player p);
     void flip(Index);
-
-    // Find move options
-    inline constexpr uint64_t get_move_options(uint64_t brd) const {
-        uint64_t edge = ((brd & 18374403900871474942ull) >> 1) | ((brd & 9187201950435737471ull) << 1);
-        edge |= ((brd & 18374403900871474942ull) >> 9) | (brd >> 8) | ((brd & 9187201950435737471ull) >> 7);
-        edge |= ((brd & 18374403900871474942ull) << 7) | (brd << 8) | ((brd & 9187201950435737471ull) << 9);
-        return edge & (~brd);
-    }
 
     uint64_t board_[2];
 };

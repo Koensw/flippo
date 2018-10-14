@@ -1,3 +1,6 @@
+#ifndef BIT_H
+#define BIT_H
+
 #include <cstdint>
 
 inline uint32_t select_bit(uint64_t v, unsigned int r) {
@@ -44,3 +47,4 @@ inline uint32_t select_bit(uint64_t v, unsigned int r) {
     // s = 65 - s;
     return s - 1;
 }
+#endif

@@ -5,19 +5,19 @@ set(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wextra -Wno-narrowing -pedantic --std=c++17 $
 add_subdirectory(player)
 
 set(PLAYERS
-            klippo
-            player1
-            player2
-            player3)
+  klippo
+  klippo_v1
+  player2
+  player3)
 
 add_custom_target(run
-                 COMMAND cp "$<TARGET_FILE:klippo>" ${CMAKE_SOURCE_DIR}/bin/
-                 COMMAND ./competition.sh ${PLAYERS}
-                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/
-                 DEPENDS klippo)
+  COMMAND cp "$<TARGET_FILE:klippo>" ${CMAKE_SOURCE_DIR}/bin/
+  COMMAND ./competition.sh ${PLAYERS}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/
+  DEPENDS klippo)
 
 add_custom_target(check
-                 COMMAND cp "$<TARGET_FILE:klippo>" ${CMAKE_SOURCE_DIR}/bin/
-                 COMMAND ./caiaio
-                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/
-                 DEPENDS klippo)
+  COMMAND cp "$<TARGET_FILE:klippo>" ${CMAKE_SOURCE_DIR}/bin/
+  COMMAND ./caiaio
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/
+  DEPENDS klippo)

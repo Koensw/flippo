@@ -7,10 +7,13 @@
 #include <unistd.h>
 
 #include "../util/bit.h"
+#include "../util/debug.h"
 #include "../util/rand.h"
 
 int rc[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
 int cc[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+
+#include "board_bit.h"
 
 void Board::init() {
     // Clear board
@@ -23,62 +26,78 @@ void Board::init() {
 }
 
 int Board::apply(Index idx, Player pl) {
-    // Set main stone
     assert(pl.color() != Player::EMPTY && get(idx).color() == Player::EMPTY);
-    set(idx, pl);
 
-    // Flip stones (FIXME: optimize)
-    int cnt = 0;
+    // Find flip stones
+    // FIXME: optimize
+    uint64_t bc = (board_[0] | board_[1]);
+    uint64_t bf = 0;
     for(int i = 0; i < 8; ++i) {
-        int r = idx.r;
-        int c = idx.c;
-        int lr = r, lc = c;
-        while(0 <= r && r < 8 && 0 <= c && c < 8) {
-            Player cpl = get({r, c});
-            if(cpl == pl) {
-                lr = r;
-                lc = c;
-            } else if(cpl.color() == Player::EMPTY)
-                break;
-            r += rc[i];
-            c += cc[i];
+        int o = (i + 4) % 8;
+        uint64_t b = get_direction(board_[pl.id()], o) & bc;
+        uint64_t bn = (1ull << (idx.r * 8 + idx.c));
+
+        int x = 0;
+        if((i % 4) == 0)
+            x = idx.r;
+        else if((i % 4) == 1)
+            x = (7 - idx.r) + idx.c;
+        else if((i % 4) == 2)
+            x = idx.c;
+        else
+            x = idx.r + idx.c;
+        b &= bitl_tb[i % 4][x];
+
+        for(int j = 0; j < 6; ++j) {
+            bn |= (get_direction(bn, i) & bc);
+            b |= (get_direction(b, o) & bc);
         }
-        if(lr == idx.r && lc == idx.c) continue;
-        r = lr;
-        c = lc;
-        r -= rc[i];
-        c -= cc[i];
-        while(r != idx.r || c != idx.c) {
-            flip({r, c});
-            cnt++;
-            r -= rc[i];
-            c -= cc[i];
-        }
+        bf |= b & bn;
     }
 
-    return cnt;
+    // Flip stones
+    board_[0] ^= bf;
+    board_[1] ^= bf;
+
+    // Put new stone
+    set(idx, pl);
+
+    return __builtin_popcountll(bf);
+}
+
+uint64_t Board::getBitMoves(Player pl) const {
+    uint64_t bc = board_[0] | board_[1];
+    // Find base options
+    uint64_t opt = get_move_options(bc);
+
+    // Find allowed options
+    uint64_t ba = 0;
+    for(int i = 0; i < 8; ++i) {
+        uint64_t b = get_direction(board_[pl.id()], i) & bc;
+        for(int j = 0; j < 5; ++j) {
+            b |= get_direction(b, i) & bc;
+        }
+        ba |= get_direction(b, i);
+    }
+
+    // Remove non flipping moves (if exists)
+    if(ba & opt) opt &= ba;
+
+    return opt;
 }
 
 std::vector<Index> Board::getMoves(Player pl) const {
-    // Find moves
-    uint64_t opt = get_move_options(board_[0] | board_[1]);
+    // Get moves
+    uint64_t opt = getBitMoves(pl);
 
-    // Prune non flipping moves (if exists)
+    // Generate move list
     std::vector<Index> mvs;
-    bool flip_moves = false;
     while(opt) {
         int i = __builtin_ctzll(opt);
         opt ^= (1ull << i);
         Index idx = {i / 8, i % 8};
 
-        Board cp = *this;
-        if(cp.apply(idx, pl)) {
-            if(!flip_moves) mvs.clear();
-            flip_moves = true;
-            mvs.push_back(idx);
-        } else if(!flip_moves) {
-            mvs.push_back(idx);
-        }
+        mvs.push_back(idx);
     }
     return mvs;
 }
