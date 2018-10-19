@@ -68,6 +68,7 @@ public:
             root_->brd = brd;
             root_->mvs = root_->brd.getMoves(root_->pl);
             root_->ch.resize(root_->mvs.size());
+            initializer_(root_.get());
         }
     }
 

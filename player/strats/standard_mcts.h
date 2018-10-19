@@ -7,12 +7,13 @@
 #include <memory>
 
 class StandardMCTSStrategy : public Strategy {
-    void start(Player::Color);
-    void update(Index idx);
+    void start(Player::Color) override;
+    void update(Index idx) override;
 
 private:
     Index play() override;
     int simulations_;
+    int total_simulations_;
 
     std::unique_ptr<MCTSBase> mcts_;
 };

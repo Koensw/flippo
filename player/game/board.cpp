@@ -102,6 +102,14 @@ std::vector<Index> Board::getMoves(Player pl) const {
     return mvs;
 }
 
+Index Board::getRandomMove(Player pl) const {
+    uint64_t opt = getBitMoves(pl);
+
+    auto idx = (rng() % __builtin_popcountll(opt));
+    int bp = select_bit(opt, idx);
+    return {bp / 8, bp % 8};
+}
+
 // NOTE: does not take invalid non-flipping moves into account
 Index Board::getRandomBaseMove() const {
     uint64_t opt = get_move_options(board_[0] | board_[1]);

@@ -17,16 +17,19 @@ public:
 
     // Board info
     Player get(Index) const;
+    // Bit board
+    inline uint64_t bb(Player pl) const { return board_[pl.id()]; }
 
-    inline int count(Player pl) const {
+    inline uint32_t count(Player pl) const {
         assert(pl.color() != Player::EMPTY);
         return __builtin_popcountll(board_[pl.id()]);
     }
-    inline int stones() const { return count(Player::me()) + count(Player::them()); }
+    inline uint32_t stones() const { return count(Player::me()) + count(Player::them()); }
 
     // Retrieve moves
     uint64_t getBitMoves(Player) const;
     std::vector<Index> getMoves(Player) const;
+    Index getRandomMove(Player) const;
     Index getRandomBaseMove() const;
 
     // Apply move

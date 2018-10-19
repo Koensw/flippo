@@ -33,12 +33,13 @@ int main(int argc, char** argv) {
     // Select strategy
     std::unique_ptr<Strategy> strategy;
     if(arg == "s") {
-        std::cerr << "R KF-SIMPLE" << std::endl;
+        std::cerr << "R KF-SIMPLE";
         strategy = std::make_unique<SimpleStrategy>();
     } else {
-        std::cerr << "R KF-MCTS-STANDARD" << std::endl;
+        std::cerr << "R KF-MCTS-STANDARD";
         strategy = std::make_unique<StandardMCTSStrategy>();
     }
+    std::cerr << " " << __DATE__ << std::endl;
 
     // Check if game has to be preloaded
     if(arg == "r") {
@@ -62,10 +63,6 @@ int main(int argc, char** argv) {
         std::cerr << "PRELOADED BOARD:" << std::endl;
         strategy->getBoard().print();
         std::cerr << "CONTINUING..." << std::endl;
-        debug = true;
-        // strategy->getBoard().apply(Board::getIndex("B5"), Player::me());
-        strategy->getBoard().getMoves(Player::me());
-        std::exit(1);
     } else {
         // Initialize player, board and apply initial move
         std::string str;

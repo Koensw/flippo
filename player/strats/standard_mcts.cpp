@@ -16,27 +16,44 @@ void StandardMCTSStrategy::start(Player::Color c) {
 
     auto selector = [](Node* p, Node* c) {
         double scr = 0.0;
-        if(c == nullptr)
-            scr = std::numeric_limits<double>::max() / 2.0;
-        else
-            scr = c->w / c->n + 1.4 * std::sqrt(std::log(p->n) / c->n);
+        // UCB
+        if(c == nullptr) {
+            scr = 1e9;
+        } else {
+            scr = c->w / c->n + 0.1 * std::sqrt(std::log(p->n) / c->n);
+        }
 
+        // heuristic
+        if(c != nullptr) scr += c->v / (c->n + 1);
+
+        // random
         scr += 1e-9 * (rng() % 1000);
         return scr;
     };
-    auto initializer = [](Node* n) { n->v = 0; };
+    auto initializer = [](Node* n) {
+        constexpr uint64_t corners = (1ull) | (1ull << 7ull) | (1ull << 56ull) | (1ull << 63ull);
+        // Favor moves in a corner heuristically
+        n->v = 0;
+        n->v += 0.1 * __builtin_popcountll(corners & n->brd.bb(n->pl.opponent()));
+    };
     auto mover = [](const Board& brd, Player pl) {
         (void)pl;
-        auto mv = brd.getRandomBaseMove();
+        auto rnd = rng() % 100;
+        Index mv;
+        // Favor more expensive fully checked moves with low number of stones
+        if(rnd < (brd.stones() + 36)) {
+            mv = brd.getRandomBaseMove();
+        } else {
+            mv = brd.getRandomMove(pl);
+        }
         return mv;
-        /*auto mvs = brd.getMoves(pl);
-        return mvs[rng() % mvs.size()];*/
     };
     auto scorer = [](const Board& brd, Player pl) {
         auto scr = (brd.count(pl) - 2.0) / 60.0;
         return scr;
     };
 
+    total_simulations_ = 0;
     simulations_ = INIT_SIMULATIONS; // default number of simulation to start with (update dynamically)
 
     mcts_ = std::unique_ptr<MCTSBase>(
@@ -54,14 +71,16 @@ Index StandardMCTSStrategy::play() {
     auto idx = mcts_->simulate(simulations_);
     auto end = getElapsed();
 
+    // calculate simulation total
+    total_simulations_ += simulations_;
+
     // calculate new number of simulations
     auto second_per_sim = (end - start) / simulations_;
-    //(64 - brd_.stones()) * new_sims * sim_per_second = PLAY_TIME;
     simulations_ = (PLAY_TIME - getElapsed()) / (((64 - brd_.stones() - 1) / 2.0 + 1e-9) * second_per_sim);
     simulations_ = std::min(std::max(MIN_SIMULATIONS, simulations_), MAX_SIMULATIONS);
 
     // print debugging
-    std::cerr << "NEXT: " << simulations_ << std::endl;
+    std::cerr << "STONES: " << simulations_ << " " << total_simulations_ << std::endl;
     std::cerr << "SCORES: " << std::endl;
     mcts_->print(5);
 
